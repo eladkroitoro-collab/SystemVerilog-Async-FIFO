@@ -18,7 +18,7 @@ The design was verified using a layered Testbench approach, including:
 * **Monitor/Checker:** Validates data integrity and Empty/Full flags.
 * **Assertions:** Ensures protocol compliance.
 
-![Testbench Diagram](Verification/testbench.sv)
+![Testbench Diagram](docs/DUT.png)
 
 **Author:** Elad Kroitoro  
 **University:** The Hebrew University Of Jerusalem - Electrical Engineering and Applied Physics Student (3rd Year)
