@@ -4,8 +4,6 @@ A Asynchronous FIFO implementation designed for safe Clock Domain Crossing (CDC)
 This project demonstrates multi-bit signal synchronization, dual-port RAM usage, and a SystemVerilog verification environment.
 The module bridges two asynchronous clock domains: Write Domain (`w_clk`) and Read Domain (`r_clk`).
 
-![Diagram](docs/block_diagram.png)
-
 ## 2. Micro-Architecture
 The design of CDC challenges using:
 * **Gray Code Counters:** To prevent multi-bit glitches during pointer sampling.
@@ -20,7 +18,7 @@ The design was verified using a layered Testbench approach, including:
 * **Monitor/Checker:** Validates data integrity and Empty/Full flags.
 * **Assertions:** Ensures protocol compliance.
 
-![Testbench Diagram](docs/testbench.sv)
+![Testbench Diagram](Verification/testbench.sv)
 
 **Author:** Elad Kroitoro  
 **University:** The Hebrew University Of Jerusalem - Electrical Engineering and Applied Physics Student (3rd Year)
