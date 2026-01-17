@@ -1,8 +1,9 @@
-<img width="2822" height="2286" alt="block_diagram" src="https://github.com/user-attachments/assets/1a280868-31b7-44f4-90cc-069389ffdaad" /># SystemVerilog Asynchronous FIFO
-
 A Asynchronous FIFO implementation designed for safe Clock Domain Crossing (CDC) using Gray Code pointers. 
 This project demonstrates multi-bit signal synchronization, dual-port RAM usage, and a SystemVerilog verification environment.
+
+## 1. Top Level Interface
 The module bridges two asynchronous clock domains: Write Domain (`w_clk`) and Read Domain (`r_clk`).
+![Top Level Diagram](docs/block_diagram.png)
 
 ## 2. Micro-Architecture
 The design of CDC challenges using:
@@ -10,7 +11,10 @@ The design of CDC challenges using:
 * **2-Stage Synchronizers:** To mitigate metastability.
 * **Dual Port RAM:** For simultaneous read/write operations.
 
-![Architecture Diagram](docs/Architecture.png)
+![Architecture Diagram](docs/Architecture_1.drawio.png)
+![Architecture Diagram](docs/Architecture_2.drawio.png)
+![Architecture Diagram](docs/Architecture_3.drawio.png)
+![Architecture Diagram](docs/Architecture_4.drawio.png)
 
 ## 3. Verification Environment
 The design was verified using a layered Testbench approach, including:
