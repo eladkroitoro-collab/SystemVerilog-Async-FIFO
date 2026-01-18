@@ -1,4 +1,4 @@
-// Module 1: Binary to Gray Converter
+// Binary to Gray Converter
 // Converts a binary value to Gray code to minimize bit transitions
 module bin2gray #(parameter WIDTH = 5) 
 (
