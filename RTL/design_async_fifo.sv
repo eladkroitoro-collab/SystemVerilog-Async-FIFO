@@ -1,5 +1,4 @@
-// Module 5: Asynchronous FIFO 
-// Connects all to implement full CDC FIFO logic
+// Asynchronous FIFO 
 module async_fifo #(
     parameter DATA_WIDTH = 8,
     parameter DEPTH      = 16
@@ -18,7 +17,7 @@ module async_fifo #(
     output logic [DATA_WIDTH-1:0] r_data,
     output logic                  r_empty
 );
-    // Address width calculation (e.g., log2(16) = 4)
+    // Address width calculation (log2(16) = 4)
     localparam PTR_WIDTH = $clog2(DEPTH); 
 
     // Pointer (Width + 1 bit for wrap-around)
@@ -27,9 +26,7 @@ module async_fifo #(
     logic [PTR_WIDTH:0] r_ptr_bin, r_ptr_gray;
     logic [PTR_WIDTH:0] r_ptr_gray_synced, r_ptr_bin_synced;
 
-    // ============================================================
-    // 1. Write Logic 
-    // ============================================================ 
+    // --Write Logic--
     logic [PTR_WIDTH:0] w_ptr_next; 
     assign w_ptr_next = w_ptr_bin + (w_en & !w_full);
 
@@ -45,9 +42,7 @@ module async_fifo #(
         .gray_out (w_ptr_gray)
     );
 
-    // ============================================================
-    // 2. Read Logic
-    // ============================================================
+    // --Read Logic--
     logic [PTR_WIDTH:0] r_ptr_next;
     assign r_ptr_next = r_ptr_bin + (r_en & !r_empty);
 
@@ -63,10 +58,7 @@ module async_fifo #(
         .gray_out (r_ptr_gray)
     );
 
-    // ============================================================
-    // 3. CDC Synchronizers
-    // ============================================================
-    
+    // --CDC Synchronizers--  
     // Sync Read Pointer to Write Domain
     ptr_sync #(.WIDTH(PTR_WIDTH+1)) u_sync_r2w (
         .clk     (w_clk),
@@ -74,7 +66,6 @@ module async_fifo #(
         .ptr_in  (r_ptr_gray), 
         .ptr_out (r_ptr_gray_synced)
     );
-
     // Sync Write Pointer to Read Domain
     ptr_sync #(.WIDTH(PTR_WIDTH+1)) u_sync_w2r (
         .clk     (r_clk),
@@ -82,24 +73,17 @@ module async_fifo #(
         .ptr_in  (w_ptr_gray),
         .ptr_out (w_ptr_gray_synced)
     );
-
-    // ============================================================
-    // 4. Gray to Binary Decoding 
-    // ============================================================
     
+    // --Gray to Binary-- 
     gray2bin #(.WIDTH(PTR_WIDTH+1)) u_g2b_write (
         .gray_in (r_ptr_gray_synced),
         .bin_out (r_ptr_bin_synced)
     );
-
     gray2bin #(.WIDTH(PTR_WIDTH+1)) u_g2b_read (
         .gray_in (w_ptr_gray_synced),
         .bin_out (w_ptr_bin_synced)
     );
-
-    // ============================================================
-    // 5. Memory Instantiation
-    // ============================================================
+    // --Memory Instantiation--
     fifo_mem #(
         .DATA_WIDTH(DATA_WIDTH),
         .DEPTH(DEPTH),
@@ -113,14 +97,10 @@ module async_fifo #(
         .r_addr (r_ptr_bin[PTR_WIDTH-1:0]), // Use LSBs for addressing
         .r_data (r_data)
     );
-
-    // ============================================================
-    // 6. Flag Generation Logic
-    // ============================================================
-
+    
+    //--Flag Generation Logic--
     // Empty Condition: Pointers are identical 
     assign r_empty = (r_ptr_bin == w_ptr_bin_synced);
-
     // Full Condition: MSB is different (wrapped), LSBs are identical
     assign w_full = (w_ptr_bin[PTR_WIDTH-1:0] == r_ptr_bin_synced[PTR_WIDTH-1:0]) && 
                     (w_ptr_bin[PTR_WIDTH]     != r_ptr_bin_synced[PTR_WIDTH]);
