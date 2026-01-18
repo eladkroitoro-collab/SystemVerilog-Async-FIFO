@@ -1,4 +1,4 @@
-// Module 4: 2-Stage Synchronizer
+// 2-Stage Synchronizer
 // Mitigates metastability when transferring signals between clock
 module ptr_sync #(parameter WIDTH = 5)
 (
@@ -8,7 +8,6 @@ module ptr_sync #(parameter WIDTH = 5)
     output logic [WIDTH-1:0] ptr_out   // Synchronized Output
 );
     logic [WIDTH-1:0] q1; // Intermediate Flip-Flop
-
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
             q1      <= '0;
