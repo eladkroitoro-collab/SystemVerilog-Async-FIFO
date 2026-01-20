@@ -25,33 +25,46 @@ module async_fifo #(
     logic [PTR_WIDTH:0] r_ptr_gray_synced, r_ptr_bin_synced;
 
     // 1. --Write Logic--
-    logic [PTR_WIDTH:0] w_ptr_next; 
+    logic [PTR_WIDTH:0] w_ptr_next;
+    logic [PTR_WIDTH:0] w_ptr_gray_next;
     assign w_ptr_next = w_ptr_bin + (w_en & !w_full);
-    // Binary Pointer Update
-    always_ff @(posedge w_clk or negedge w_rst_n) begin
-        if (!w_rst_n) w_ptr_bin <= 0;
-        else          w_ptr_bin <= w_ptr_next;
-    end
     // Binary to Gray Conversion
     bin2gray #(.WIDTH(PTR_WIDTH+1)) u_w_p2g (
         .bin_in   (w_ptr_next), 
         .gray_out (w_ptr_gray)
     );
 
+    // Binary Pointer Update
+    always_ff @(posedge w_clk or negedge w_rst_n) begin
+        if (!w_rst_n) begin
+            w_ptr_bin  <= 0;
+            w_ptr_gray <= 0; 
+        end else begin
+            w_ptr_bin  <= w_ptr_next;
+            w_ptr_gray <= w_ptr_gray_next; 
+        end
+    end
     // 2.--Read Logic--
     logic [PTR_WIDTH:0] r_ptr_next;
+    logic [PTR_WIDTH:0] r_ptr_gray_next;
     assign r_ptr_next = r_ptr_bin + (r_en & !r_empty);
-    // Binary Pointer Update
-    always_ff @(posedge r_clk or negedge r_rst_n) begin
-        if (!r_rst_n) r_ptr_bin <= 0;
-        else          r_ptr_bin <= r_ptr_next;
-    end
+    
     // Binary to Gray Conversion
     bin2gray #(.WIDTH(PTR_WIDTH+1)) u_r_p2g (
         .bin_in   (r_ptr_next),
         .gray_out (r_ptr_gray)
-    );
-
+    ); 
+    // Binary Pointer Update
+    always_ff @(posedge r_clk or negedge r_rst_n) begin
+        if (!r_rst_n) begin 
+            r_ptr_bin <= 0;
+            r_ptr_gray <= 0;
+        end else begin
+            r_ptr_bin <= r_ptr_next;
+            r_ptr_gray <= r_ptr_gray_next;            
+        end          
+    end
+    
     // 3.--CDC Synchronizers--  
     // Sync Read Pointer to Write Domain
     ptr_sync #(.WIDTH(PTR_WIDTH+1)) u_sync_r2w (
