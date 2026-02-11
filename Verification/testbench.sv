@@ -47,6 +47,7 @@ module tb_async_fifo;
             wait(!w_full); 
             @(posedge w_clk); 
             w_en = 1;
+            #2
             w_data = i * 10; // Pattern: 0, 10, 20...
             @(posedge w_clk);
             w_en = 0;
@@ -59,7 +60,8 @@ module tb_async_fifo;
         for (int i = 0; i < 16; i++) begin
             wait(!r_empty);   
             @(posedge r_clk);
-            r_en = 1;  
+            r_en = 1; 
+            #2
             @(posedge r_clk);
             r_en = 0;
             $display("Read Data: %d (Time: %t)", r_data, $time);
