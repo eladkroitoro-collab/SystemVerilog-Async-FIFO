@@ -67,6 +67,28 @@ module tb_async_fifo;
             $display("Read Data: %d (Time: %t)", r_data, $time);
         end
 
+        // 4. Reset Recovery
+		$display("Test 3: Testing Reset Recovery during operation");
+		for (int i = 0; i < 7; i++) begin
+    		@(posedge w_clk);
+    		w_en = 1;
+            #2
+    		w_data = i * 10;
+    		@(posedge w_clk);
+    		w_en = 0;
+		end
+
+		$display("FIFO is partially full. Injecting asynchronous Reset!");
+		w_rst_n = 0; r_rst_n = 0;
+		#30; 
+		w_rst_n = 1; r_rst_n = 1; 
+		#20; 
+
+  		if (r_empty == 1 && w_full == 0) begin
+    		$display("SUCCESS: FIFO successfully cleared after mid-op reset.");
+		end else begin
+    		$display("ERROR: FIFO did not reset correctly!");
+		end
         #100;
         $display(" Test Done");
         $finish;
